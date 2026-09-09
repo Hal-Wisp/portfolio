@@ -1,0 +1,90 @@
+---
+title: "Twenty years of northern border crossings"
+subtitle: "Seasonality, the 2020 collapse, and which ports actually came back"
+date: last-modified
+author: "Jacob Gray"
+categories: [SQL, Python, Power BI, Logistics]
+draft: true
+---
+
+<!--
+STUB — set `draft: false` when ready. Fill in the placeholders.
+This is the project where you have first-hand knowledge of the ports, so use it:
+a sentence explaining *why* a pattern exists is worth more than the chart.
+-->
+
+::: {.finding-box}
+[The headline. Something like: truck volumes at [port] recovered to [X]% of
+2019 by [year] while passenger crossings reached only [Y]%, and the divergence
+shows up months before [the policy change] rather than after it.]
+:::
+
+## The question
+
+Crossing volume drives everything downstream in a border brokerage — staffing,
+clearance lead time, where a delay is about to happen. The data is public and
+goes back to 1996, which is long enough to separate normal seasonality from an
+actual shift.
+
+## The data
+
+::: {.provenance}
+<dl>
+  <dt>Source</dt>
+  <dd>
+    <a href="https://www.bts.gov/browse-statistical-products-and-data/border-border-crossingentry-data/border-crossingentry-data">Border
+    Crossing/Entry Data</a>, Bureau of Transportation Statistics.
+  </dd>
+  <dt>Coverage</dt>
+  <dd>Monthly counts by port, measure (trucks, loaded containers, personal
+  vehicles, pedestrians, rail), 1996–present.</dd>
+  <dt>Retrieved</dt><dd>[Date]</dd>
+  <dt>Known limits</dt>
+  <dd>
+    Counts inbound crossings only, not outbound, and counts conveyances rather
+    than shipment value. A truck is a truck whether it is full or empty.
+  </dd>
+</dl>
+:::
+
+## Approach
+
+[Replace with what you did:]
+
+- Load to SQLite; the file is long-format and clean enough to query directly.
+- Index monthly volumes to a 2019 baseline per port so ports of different sizes
+  are comparable.
+- Decompose one port series into trend and seasonal components to show the
+  size of the normal summer peak against the 2020 break.
+- Compare Blaine, Sumas, and Lynden against the northern border as a whole.
+
+```{sql}
+#| eval: false
+select port_name,
+       strftime('%Y', date) as yr,
+       sum(value) filter (where measure = 'Trucks') as trucks
+from crossings
+where border = 'US-Canada Border'
+  and state = 'Washington'
+group by port_name, yr
+order by port_name, yr;
+```
+
+## What I found
+
+[Two charts at most. One long time series with the seasonal shape visible, one
+recovery comparison indexed to 2019. Write a sentence under each.]
+
+[This is where you add what the data does not show — the operational reason a
+port behaves the way it does. That context is your advantage.]
+
+## What I would do differently
+
+[Candidates: conveyance counts are a poor proxy for trade value, so joining
+Census district-level trade data would show whether fewer trucks carried more
+value; and a proper interrupted time series would test the 2020 break rather
+than describing it.]
+
+---
+
+*Code for this project: [GitHub](https://github.com/YOUR-GITHUB-USERNAME/REPO).*

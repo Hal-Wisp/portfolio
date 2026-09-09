@@ -1,0 +1,30 @@
+# Quarto build output
+/_site/
+.quarto/
+
+# NOTE: do NOT ignore /_freeze/ — committing it is what stops
+# GitHub Actions from re-running your analysis on every push.
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Secrets — API keys never go in the repo
+.env
+*.key
+
+# Large or raw data. Commit small, cleaned files; keep raw pulls local.
+data/raw/
+*.sqlite
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+/.quarto/
+**/*.quarto_ipynb
+ # Unfinished projects — kept locally, not published yet. projects/tariff-exposure/ projects/border-throughput/ projects/landed-cost-model/

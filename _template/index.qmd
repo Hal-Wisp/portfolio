@@ -1,0 +1,94 @@
+---
+title: "Short, concrete title — name the question, not the technique"
+subtitle: "One line a non-technical hiring manager understands"
+date: 2026-01-01
+author: "Jacob Gray"
+categories: [SQL, Python]
+---
+
+<!--
+HOW TO USE THIS TEMPLATE
+
+1. Copy this folder to projects/your-project-name/
+2. Fill in every section below. Delete the guidance comments as you go.
+3. Add an entry to index.qmd so it appears on the homepage.
+
+Two rules that matter more than the writing:
+  - The headline finding goes first, in plain English, above any code.
+  - Never use employer data. Public federal data or synthetic data only.
+-->
+
+::: {.finding-box}
+The single most important thing you found, in one or two sentences, stated so a
+compliance manager who never reads code understands it. A number belongs here if
+you have one.
+:::
+
+## The question
+
+Two or three sentences. What would someone actually do differently if they knew
+the answer? Tie it to a real decision — a sourcing choice, a review threshold, a
+place to look for recovered duty.
+
+## The data
+
+::: {.provenance}
+<dl>
+  <dt>Source</dt><dd>Name it, and link to it.</dd>
+  <dt>Coverage</dt><dd>Date range, records, geography.</dd>
+  <dt>Retrieved</dt><dd>Date you pulled it.</dd>
+  <dt>Known limits</dt><dd>What this data cannot answer. Be specific.</dd>
+</dl>
+:::
+
+Say how you got it and what you had to fix. Messy joins, inconsistent country
+codes, and duplicate records are worth describing — cleaning decisions are
+analysis decisions, and showing yours is more convincing than a clean result.
+
+```{python}
+#| label: load
+#| eval: false
+# Remove `eval: false` once this runs against real data.
+import pandas as pd
+
+df = pd.read_csv("../../data/your-file.csv")
+df.shape
+```
+
+## Approach
+
+Walk through what you did and, more importantly, why. Where you had a choice
+between two methods, say which you picked and what it cost you.
+
+```{sql}
+#| eval: false
+-- Show real SQL where SQL is the honest tool for the step.
+select hts_code,
+       count(*) as entries,
+       sum(duty_paid) as duty
+from entries
+group by hts_code
+order by duty desc;
+```
+
+## What I found
+
+Lead with the result. One chart usually beats three. Label the axes, include
+units, and write a sentence under each figure saying what to look at — do not
+leave the reader to work it out.
+
+```{python}
+#| label: fig-main
+#| eval: false
+#| fig-cap: "Say what the chart shows, in a full sentence."
+```
+
+## What I would do differently
+
+The section most people skip, and the one that separates you from a bootcamp
+portfolio. Name the weakness in your own analysis, what data would fix it, and
+what you would test next.
+
+---
+
+*Code and data for this project: [GitHub](https://github.com/YOUR-GITHUB-USERNAME/REPO).*

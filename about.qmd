@@ -1,0 +1,69 @@
+---
+title: "About"
+subtitle: "Trade compliance specialist learning to do it with code"
+toc: false
+---
+
+I have spent about eight years inside the paperwork of international trade —
+first at a customs broker on the Blaine border crossing, then in export
+licensing for aerospace, and now running import and export compliance for a
+manufacturer and distributor in Bellingham.
+
+The pattern across all of it is the same. The regulation is knowable. The
+bottleneck is the data: thousands of line items, inconsistent vendor records,
+classifications that were assigned once and never revisited. The wins I am
+proudest of came from digging through entry data rather than from reading the
+regulation more carefully.
+
+I am finishing a B.S. in Data Analytics at Western Governors University to do
+that work properly — SQL first, now Python. This site is where I practice on
+public data.
+
+## Where I have worked
+
+**Import & Export Compliance Department Manager** — LFS Inc., Bellingham, WA
+*(Mar 2026 – present)*
+
+Own import and export compliance for a multi-million-dollar catalog. Build the
+landed cost models that price 44 international suppliers, run restricted party
+screening on outbound freight, and file all export declarations through AES
+Direct. Recovered $500K in duties through an IEEPA trade data audit.
+
+**Trade Compliance & Materials Specialist** — Korry Electronics, Everett, WA
+*(May 2024 – Feb 2026)*
+
+Drafted SNAP-R and DDTC export license applications and commodity jurisdiction
+packages for aerospace defense articles. Ran ECCN classification and automated
+screening in OCR EASE. Resolved an active trade embargo affecting Embraer
+shipments through a root-cause classification audit.
+
+**Logistics, Trade Data & Entry Specialist** — Pacific Customs Brokers / A&A /
+TLR / UPS, Blaine, WA *(May 2016 – Mar 2024)*
+
+Classified goods to 10-digit HTSUS across EPA, FDA, DOT, APHIS, and Lacey Act
+requirements. Filed high-volume clearances in CargoWise, Editrade, and ACE.
+Recovered $10M in duty refunds for corporate accounts under the Craft Beverage
+Modernization and Tax Act.
+
+## Education
+
+**B.S. Data Analytics** — Western Governors University *(Sep 2025 – Mar 2027)*
+Relational databases and SQL, Python, business intelligence, predictive
+modeling, statistical process analysis.
+
+**A.A.** — Whatcom Community College *(2017–2018)*
+
+## What I know
+
+| | |
+|---|---|
+| **Regulation** | ITAR, EAR, OFAC sanctions, HTSUS classification, C-TPAT, duty drawback |
+| **Filing systems** | ACE/AES Direct, SNAP-R, DDTC, CargoWise, OCR EASE, Editrade |
+| **Data** | SQL, Python (pandas), Power BI, Tableau, advanced Excel modeling |
+| **ERP** | Infor SyteLine, SAP MM, Koble Eagle |
+
+## Reach me
+
+[jacobarcher1@gmail.com](mailto:jacobarcher1@gmail.com) ·
+[LinkedIn](https://www.linkedin.com/in/jake-gray-0a12023a0/) ·
+[GitHub](https://github.com/Hal-Wisp)

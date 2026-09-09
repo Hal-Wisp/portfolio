@@ -1,0 +1,86 @@
+---
+title: "Jacob Gray"
+subtitle: "Trade compliance and logistics analytics"
+toc: false
+page-layout: article
+---
+
+::: {.opener}
+I audit import and export data for a living — tariff classifications, entry
+filings, restricted party screening. These are the same questions worked in the
+open, using public federal trade data, with the code and the reasoning attached.
+
+<dl class="facts">
+  <dt>Based in</dt><dd>Bellingham, Washington</dd>
+  <dt>Focus</dt><dd>Import/export compliance, customs data, landed cost</dd>
+  <dt>Tools</dt><dd>SQL, Python, Excel, Power BI</dd>
+  <dt>Contact</dt><dd><a href="mailto:jacobarcher1@gmail.com">jacobarcher1@gmail.com</a></dd>
+</dl>
+:::
+
+## Projects
+
+:::::: {.entries}
+
+:::: {.entry .pending}
+### [Finding restricted parties in a messy vendor list](projects/denied-party-screening/index.qmd)
+
+::: {.finding}
+Exact-match screening missed a majority of true hits in testing. Fuzzy matching
+caught them, but at a false-positive rate that would bury a small compliance
+team — so the useful output is a ranked review queue, not a pass/fail flag. <span class="status">In progress</span>
+:::
+
+<p class="sourceline">Trade.gov Consolidated Screening List API · Python, rapidfuzz, SQLite</p>
+::::
+
+<!--
+
+::: {.entry .pending}
+### [Tariff exposure by HTS chapter](projects/tariff-exposure/index.qmd)
+
+::: {.finding}
+Modeling duty exposure across an import book under current Section 301 and
+IEEPA rates, to find where reclassification or sourcing changes move the most
+money. <span class="status">In progress</span>
+:::
+
+<p class="sourceline">USITC DataWeb · Census USA Trade Online · SQL, Python</p>
+::::
+
+:::: {.entry .pending}
+### [Twenty years of northern border crossings](projects/border-throughput/index.qmd)
+
+::: {.finding}
+Monthly truck, rail, and passenger volumes at northern land ports, with the
+seasonality, the 2020 collapse, and how far each port has actually recovered.
+<span class="status">In progress</span>
+:::
+
+<p class="sourceline">BTS Border Crossing/Entry Data · SQL, Python, Power BI</p>
+::::
+
+:::: {.entry .pending}
+### [A relational landed cost model](projects/landed-cost-model/index.qmd)
+
+::: {.finding}
+Taking a flat, messy cost spreadsheet to a normalized schema, then rebuilding
+landed cost per unit as a query instead of a wall of nested formulas.
+<span class="status">In progress</span>
+:::
+
+<p class="sourceline">Synthetic vendor and freight data · SQL (SQLite), Python</p>
+::::
+
+-->
+
+::::::
+
+## About this site
+
+Every project here uses public government data or data I generated myself. None
+of it comes from an employer. Each write-up follows the same structure: the
+question, the data and its limits, the method, what I found, and what I would do
+with more time.
+
+Résumé and background are on the [about page](about.qmd).

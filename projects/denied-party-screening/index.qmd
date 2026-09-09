@@ -1,0 +1,195 @@
+---
+title: "Finding restricted parties in a messy vendor list"
+subtitle: "Where to set the match threshold when both kinds of error are expensive"
+date: last-modified
+author: "Jacob Gray"
+categories: [Python, SQL, Export controls]
+---
+
+<!--
+DRAFT SCAFFOLD — replace the bracketed placeholders with your real numbers
+before publishing, and delete `eval: false` from each chunk once it runs.
+-->
+
+::: {.finding-box}
+Exact name matching caught only [X] of [N] known-bad vendors in a seeded test
+file. Fuzzy matching at a 90% similarity threshold caught [Y], but flagged [Z]
+clean vendors for every true hit.
+
+The threshold is not a technical choice. It sets how many hours of manual review
+the compliance team absorbs, so the useful output is a ranked queue with the
+score attached — not a pass/fail flag.
+:::
+
+## The question
+
+Restricted party screening is a legal requirement before an export moves, and
+most small teams do it by pasting names into a web form one at a time. That
+works until the vendor list has several hundred entries and the names in the ERP
+do not match the names on the list — "Shenzhen Hua Xin Tech Co Ltd" against
+"Shenzhen Huaxin Technology Co., Ltd."
+
+So: how much does a name-matching pipeline actually catch, and what does it cost
+in review time at each threshold?
+
+## The data
+
+::: {.provenance}
+<dl>
+  <dt>Source</dt>
+  <dd>
+    <a href="https://www.trade.gov/consolidated-screening-list">Consolidated
+    Screening List</a>, U.S. International Trade Administration. Free public API,
+    aggregating BIS Entity List, OFAC SDN, DDTC Debarred, and others.
+  </dd>
+  <dt>Coverage</dt><dd>[N] entities across [N] source lists, as published.</dd>
+  <dt>Retrieved</dt><dd>[Date]</dd>
+  <dt>Vendor file</dt>
+  <dd>
+    Synthetic. [N] vendor records I generated, seeded with [N] names copied from
+    the CSL and then degraded with realistic transcription errors. No employer
+    data is used anywhere in this project.
+  </dd>
+  <dt>Known limits</dt>
+  <dd>
+    Name matching alone is not screening. The CSL carries addresses, aliases, and
+    countries that a real process must also compare, and a hit is a starting
+    point for a human review, never a decision.
+  </dd>
+</dl>
+:::
+
+The CSL API returns nested JSON — each entity carries a list of alternate names
+and a list of addresses. Flattening those aliases into their own rows matters:
+[explain here what share of your matches came from an alias rather than the
+primary name, once you have run it].
+
+```{python}
+#| label: fetch
+#| eval: false
+import requests
+import pandas as pd
+
+resp = requests.get(
+    "https://data.trade.gov/consolidated_screening_list/v1/search",
+    params={"size": 100},
+    headers={"subscription-key": API_KEY},  # free key from api.trade.gov
+    timeout=30,
+)
+results = resp.json()["results"]
+
+# One row per (entity, name) so aliases are searchable too.
+names = [
+    {"entity_id": e["id"], "source": e["source"], "name": alias}
+    for e in results
+    for alias in [e.get("name")] + (e.get("alt_names") or [])
+    if alias
+]
+csl = pd.DataFrame(names)
+csl.shape
+```
+
+## Approach
+
+I stored both the flattened CSL and the vendor file in SQLite, so the join and
+the summaries stay in SQL and only the string comparison happens in Python.
+
+Three passes, cheapest first:
+
+1. **Normalize.** Uppercase, strip punctuation, and remove corporate suffixes
+   (`CO`, `LTD`, `LLC`, `GMBH`). Suffixes are noise that inflates similarity
+   between two unrelated companies.
+2. **Exact match** on the normalized string. Fast, and the baseline to beat.
+3. **Fuzzy match** with `rapidfuzz`, scoring every vendor against every CSL
+   name, keeping the best score per vendor.
+
+```{python}
+#| label: normalize
+#| eval: false
+import re
+
+SUFFIXES = r"\b(CO|CORP|CORPORATION|LTD|LIMITED|LLC|INC|GMBH|SA|BV|PTE)\b"
+
+def normalize(name: str) -> str:
+    n = name.upper()
+    n = re.sub(r"[^A-Z0-9 ]", " ", n)
+    n = re.sub(SUFFIXES, " ", n)
+    return re.sub(r"\s+", " ", n).strip()
+```
+
+```{python}
+#| label: match
+#| eval: false
+from rapidfuzz import process, fuzz
+
+choices = csl["name_norm"].tolist()
+
+matches = []
+for vendor in vendors["name_norm"]:
+    best = process.extractOne(vendor, choices, scorer=fuzz.token_sort_ratio)
+    matches.append({"vendor": vendor, "csl_name": best[0], "score": best[1]})
+
+matched = pd.DataFrame(matches)
+```
+
+`token_sort_ratio` rather than a plain ratio, because word order varies between
+vendor masters and the CSL and I did not want "Technology Shenzhen Huaxin" to
+score low against the same words in a different order.
+
+Because the seeded names are labelled, every threshold can be scored properly:
+
+```{sql}
+#| eval: false
+select case when score >= 95 then '95+'
+            when score >= 90 then '90-94'
+            when score >= 85 then '85-89'
+            else 'below 85' end            as band,
+       count(*)                            as flagged,
+       sum(is_seeded_bad)                  as true_hits,
+       count(*) - sum(is_seeded_bad)       as false_positives
+from matched
+group by band
+order by band desc;
+```
+
+## What I found
+
+```{python}
+#| label: fig-threshold
+#| eval: false
+#| fig-cap: "Recall and review burden at each similarity threshold. Every point gained on the left costs roughly [N] additional names to review by hand."
+```
+
+[Write the result once you have run it. State the recall and the false-positive
+count at each threshold, then say which threshold you would actually recommend
+and why. The recommendation is the part a hiring manager reads.]
+
+A detail worth flagging: [note whatever surprised you — for example, whether the
+misses clustered in transliterated names, or whether address matching would have
+caught what name matching did not].
+
+## What I would do differently
+
+Name similarity is a weak signal on its own. Three things would make this
+defensible as a real screening tool rather than a demonstration:
+
+- **Score on more than the name.** Country and city are in both files. A 88%
+  name match in the same city is a stronger signal than a 94% match on the other
+  side of the world, and combining fields would let me raise the name threshold
+  without losing recall.
+- **Handle transliteration properly.** Romanized Chinese and Arabic names are
+  where edit distance struggles most, and a phonetic key (Double Metaphone)
+  applied before scoring would likely recover part of the gap.
+- **Test against a harder file.** My degraded names are my own guesses at what
+  real transcription error looks like. A better test set would come from actual
+  historical false positives, which is the kind of data a compliance team has and
+  I could not use here.
+
+The honest limit of this exercise: I measured recall against errors I introduced
+myself, so the numbers describe how the matcher handles my assumptions about
+messy data, not how it would handle yours.
+
+---
+
+*Code for this project: [GitHub](https://github.com/Hal-Wisp/Finding-restricted-parties-in-a-messy-vendor-list).
+The CSL is public; the vendor file is synthetic and included in the repo.*

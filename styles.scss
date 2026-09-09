@@ -1,0 +1,256 @@
+/*-- scss:defaults --*/
+
+// Palette drawn from customs paperwork: ledger-green paper, ink, and the
+// oxblood of an entry stamp. Kept muted so charts carry the color.
+$ink:        #1b2a33;
+$ink-soft:   #55636c;
+$paper:      #f5f7f4;
+$paper-card: #ffffff;
+$rule:       #d3dbd5;
+$stamp:      #7a1f2b;
+$brass:      #9a7526;
+
+$body-bg:    $paper;
+$body-color: $ink;
+$link-color: $stamp;
+$link-hover-color: darken($stamp, 8%);
+
+$font-family-sans-serif: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+$font-family-monospace:  "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+$headings-font-family:   "Source Serif 4", Georgia, serif;
+
+$font-size-base:   1.0625rem;
+$line-height-base: 1.65;
+$headings-font-weight: 600;
+$headings-line-height: 1.2;
+
+$border-radius: 2px;
+$navbar-bg: $paper;
+$navbar-fg: $ink;
+$code-bg: #eef1ed;
+$code-color: $ink;
+
+/*-- scss:rules --*/
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.01em;
+}
+
+h1.title {
+  font-size: clamp(2rem, 4.5vw, 2.9rem);
+  margin-bottom: 0.4rem;
+}
+
+// Body copy stays under ~72 characters.
+main p, main li {
+  max-width: 40rem;
+}
+
+// --- Navigation -------------------------------------------------------
+
+.navbar {
+  border-bottom: 1px solid $rule;
+  font-weight: 500;
+}
+
+.navbar-brand {
+  font-family: $headings-font-family;
+  font-size: 1.15rem;
+}
+
+// --- Home: opening statement -----------------------------------------
+
+.opener {
+  border-bottom: 1px solid $rule;
+  padding-bottom: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.opener p {
+  font-family: $headings-font-family;
+  font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+  line-height: 1.4;
+  max-width: 34rem;
+  margin-bottom: 1.5rem;
+}
+
+// A small facts strip. Labels are the information here, so they get a
+// dedicated column rather than being tacked above the values.
+.facts {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.35rem 1.25rem;
+  font-size: 0.9rem;
+  max-width: 34rem;
+}
+
+.facts dt {
+  color: $ink-soft;
+  font-weight: 400;
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+// --- Home: the project index -----------------------------------------
+// Entries read as line items on a manifest, not as cards.
+
+.entry {
+  border-top: 1px solid $rule;
+  padding: 1.6rem 0;
+}
+
+.entries {
+  border-bottom: 1px solid $rule;
+  margin-bottom: 2.5rem;
+}
+
+.entry h3 {
+  font-size: 1.3rem;
+  margin: 0 0 0.4rem;
+}
+
+.entry h3 a {
+  color: $ink;
+  text-decoration: none;
+  background-image: linear-gradient(to right, $rule, $rule);
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 2px;
+}
+
+.entry h3 a:hover,
+.entry h3 a:focus-visible {
+  color: $stamp;
+  background-image: linear-gradient(to right, $stamp, $stamp);
+}
+
+.entry .finding {
+  max-width: 38rem;
+  margin: 0 0 0.7rem;
+}
+
+.entry .sourceline {
+  font-family: $font-family-monospace;
+  font-size: 0.8rem;
+  color: $ink-soft;
+  margin: 0;
+}
+
+.entry.pending h3 a,
+.entry.pending h3 {
+  color: $ink-soft;
+}
+
+.entry.pending .status {
+  color: $brass;
+  font-family: $font-family-monospace;
+  font-size: 0.8rem;
+}
+
+// --- Project pages ----------------------------------------------------
+
+// The headline finding, set apart at the top of each write-up.
+.finding-box {
+  border-left: 3px solid $stamp;
+  background: $paper-card;
+  padding: 1rem 1.25rem;
+  margin: 1.75rem 0;
+}
+
+.finding-box p {
+  margin: 0;
+  font-family: $headings-font-family;
+  font-size: 1.1rem;
+  line-height: 1.45;
+}
+
+.finding-box p + p {
+  margin-top: 0.6rem;
+}
+
+// Provenance block: where the data came from and what it can't tell you.
+.provenance {
+  font-size: 0.9rem;
+  border-top: 1px solid $rule;
+  border-bottom: 1px solid $rule;
+  padding: 1rem 0;
+  margin: 2rem 0;
+}
+
+.provenance dl {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 0.3rem 1.25rem;
+  margin: 0;
+}
+
+.provenance dt {
+  color: $ink-soft;
+}
+
+.provenance dd {
+  margin: 0;
+}
+
+// --- Code and tables --------------------------------------------------
+
+div.sourceCode {
+  border: 1px solid $rule;
+  border-radius: $border-radius;
+  background-color: $code-bg;
+}
+
+pre code {
+  font-size: 0.85rem;
+}
+
+.code-fold-btn, details > summary {
+  font-size: 0.85rem;
+  color: $ink-soft;
+}
+
+table {
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+thead th {
+  border-bottom: 2px solid $ink !important;
+  font-weight: 600;
+}
+
+// --- Accessibility floor ---------------------------------------------
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid $stamp;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .facts,
+  .provenance dl {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+
+  .facts dt,
+  .provenance dt {
+    margin-top: 0.6rem;
+  }
+}

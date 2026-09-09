@@ -1,0 +1,17 @@
+# Core analysis
+pandas>=2.2
+numpy>=1.26
+
+# Charts
+matplotlib>=3.8
+plotnine>=0.13
+
+# Notebook execution for Quarto's Python chunks
+jupyter>=1.0
+nbformat>=5.9
+nbclient>=0.9
+
+# Project-specific
+requests>=2.31        # Consolidated Screening List API
+rapidfuzz>=3.6        # name matching
+tabulate>=0.9         # table rendering for df-print

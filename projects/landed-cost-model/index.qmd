@@ -1,0 +1,109 @@
+---
+title: "A relational landed cost model"
+subtitle: "Moving a landed cost calculation out of nested formulas and into a schema"
+date: last-modified
+author: "Jacob Gray"
+categories: [SQL, Database design, Procurement]
+draft: true
+---
+
+<!--
+STUB — set `draft: false` when ready.
+This is the project that shows database design, which most analytics portfolios
+skip entirely. Include the ER diagram; it does a lot of work on its own.
+-->
+
+::: {.finding-box}
+[The headline. Something like: the same landed cost that took [N] nested lookups
+per row in the spreadsheet becomes a [N]-table join, and adding a new freight
+mode goes from editing every formula to inserting one row.]
+:::
+
+## The question
+
+Landed cost models start as one spreadsheet and end as a file only one person
+can safely edit — freight allocated by weight in one column, by value in
+another, tariff rates hardcoded, and no way to see the version that produced
+last quarter's decision.
+
+The question is what the same calculation looks like as a normalized schema, and
+what that buys.
+
+## The data
+
+::: {.provenance}
+<dl>
+  <dt>Source</dt>
+  <dd>
+    Synthetic. [N] vendors, [N] SKUs, [N] shipments generated with Python to
+    resemble a real import book, including the messiness — inconsistent units,
+    missing weights, and duty rates entered as both `0.05` and `5%`.
+  </dd>
+  <dt>Rates</dt><dd>Duty rates drawn from the public HTSUS.</dd>
+  <dt>Known limits</dt>
+  <dd>
+    Synthetic data cannot surprise you the way real data does. The schema is the
+    deliverable here; the numbers are illustrative.
+  </dd>
+</dl>
+:::
+
+## Approach
+
+Third normal form, then landed cost as a view rather than a stored column, so
+the calculation has one definition.
+
+[Add the ER diagram — Quarto renders Mermaid natively:]
+
+```{mermaid}
+%%| eval: false
+erDiagram
+    VENDOR ||--o{ PURCHASE_ORDER : places
+    PURCHASE_ORDER ||--|{ PO_LINE : contains
+    SKU ||--o{ PO_LINE : "appears on"
+    SKU }o--|| HTS_CODE : "classified as"
+    HTS_CODE ||--o{ DUTY_RATE : "has rate by origin"
+    SHIPMENT ||--|{ PO_LINE : carries
+    SHIPMENT }o--|| FREIGHT_QUOTE : priced_by
+```
+
+The allocation rule is the interesting decision: freight and insurance are
+charged per shipment but landed cost is needed per unit, so the cost has to be
+apportioned. [Say which basis you chose — weight, value, or volume — and what it
+does to per-unit cost for dense cheap goods versus light expensive ones. That
+choice changes which SKUs look profitable.]
+
+```{sql}
+#| eval: false
+create view landed_cost as
+select l.po_line_id,
+       s.sku_code,
+       l.unit_price,
+       l.unit_price * d.rate                        as duty_per_unit,
+       f.total_cost * (l.line_weight_kg
+                       / sh.total_weight_kg)
+                    / l.quantity                    as freight_per_unit
+from po_line       l
+join sku           s  on s.sku_id = l.sku_id
+join hts_code      h  on h.hts_id = s.hts_id
+join duty_rate     d  on d.hts_id = h.hts_id
+                     and d.origin_country = l.origin_country
+join shipment      sh on sh.shipment_id = l.shipment_id
+join freight_quote f  on f.quote_id = sh.quote_id;
+```
+
+## What I found
+
+[Compare the two approaches on something concrete: how many SKUs change rank on
+landed cost when the allocation basis changes from value to weight, and what
+that would mean for a sourcing decision.]
+
+## What I would do differently
+
+[Candidates: duty rates need effective dates so historical entries reprice
+correctly, currency is assumed constant, and a real model needs to handle
+partial shipments and split orders.]
+
+---
+
+*Code and schema: [GitHub](https://github.com/YOUR-GITHUB-USERNAME/REPO).*

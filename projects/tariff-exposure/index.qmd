@@ -1,0 +1,91 @@
+---
+title: "Tariff exposure by HTS chapter"
+subtitle: "Where duty concentrates in an import book, and what moves it"
+date: last-modified
+author: "Jacob Gray"
+categories: [SQL, Python, Tariffs]
+draft: true
+---
+
+<!--
+STUB — set `draft: false` when this is ready to publish.
+Fill in every bracketed placeholder. Delete these comments.
+-->
+
+::: {.finding-box}
+[The headline number. Something in the shape of: duty exposure concentrates in
+[N] HTS chapters accounting for [X]% of value but [Y]% of duty paid, and the
+gap between those two figures is where the money is.]
+:::
+
+## The question
+
+Duty is not spread evenly across an import book. A small number of tariff lines
+usually carry most of the cost, and those lines are where reclassification
+review, first sale valuation, or a sourcing change pays for itself.
+
+The question is where to look first, and how much a plausible change is worth
+before anyone spends time on it.
+
+## The data
+
+::: {.provenance}
+<dl>
+  <dt>Source</dt>
+  <dd>
+    <a href="https://dataweb.usitc.gov/">USITC DataWeb</a> for import value and
+    calculated duty by HTS; the
+    <a href="https://hts.usitc.gov/">HTSUS</a> for current rates.
+  </dd>
+  <dt>Coverage</dt><dd>[Years], U.S. imports for consumption, [chapters].</dd>
+  <dt>Retrieved</dt><dd>[Date]</dd>
+  <dt>Known limits</dt>
+  <dd>
+    Aggregate national data, not any one importer's entries. Section 301 and
+    IEEPA rates change; this reflects the schedule as of [date]. Rates of duty
+    also depend on country of origin and trade program eligibility, which
+    aggregate data flattens.
+  </dd>
+</dl>
+:::
+
+## Approach
+
+[Sketch, to replace with what you actually did:]
+
+- Load HTS-level import value and duty into SQLite, keyed on the 10-digit code.
+- Join the applicable general rate, plus any Section 301 or IEEPA additional
+  rate, on the chapter or subheading.
+- Compute effective duty rate per line, and rank by absolute duty paid rather
+  than by rate — a 2% rate on a large line beats a 25% rate on a small one.
+- Model one or two concrete scenarios: shifting origin for the top lines, or
+  reclassifying where the code looks contestable.
+
+```{sql}
+#| eval: false
+select substr(hts_code, 1, 4)          as heading,
+       sum(customs_value)              as value,
+       sum(calculated_duty)            as duty,
+       sum(calculated_duty) * 1.0
+         / nullif(sum(customs_value), 0) as effective_rate
+from imports
+where year = 2025
+group by heading
+order by duty desc
+limit 20;
+```
+
+## What I found
+
+[Result and one chart. Rank chapters by duty, and show effective rate against
+value so the outliers are visible.]
+
+## What I would do differently
+
+[Name the weakness. Likely candidates: aggregate data hides origin mix, the
+scenarios assume a sourcing change is feasible when qualification and lead time
+often make it not, and duty is only part of landed cost.]
+
+---
+
+*Code for this project: [GitHub](https://github.com/YOUR-GITHUB-USERNAME/REPO).*
